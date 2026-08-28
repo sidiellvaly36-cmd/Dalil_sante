@@ -13,8 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.Stage.Dalil_sante.dto.SpecialiteMedicaleRequest;
+import com.Stage.Dalil_sante.dto.SpecialiteMedicaleResponse;
 import com.Stage.Dalil_sante.entity.SpecialiteMedicale;
 import com.Stage.Dalil_sante.service.SpecialiteMedicaleService;
+
+import jakarta.annotation.security.PermitAll;
 
 @RestController
 @RequestMapping("/api/specialites-medicales")
@@ -29,63 +33,110 @@ public class SpecialiteMedicaleController {
                 specialiteMedicaleService;
     }
 
-    // Ajouter une spécialité médicale
+    // ============================================================
+    // AJOUTER UNE SPÉCIALITÉ MÉDICALE
+    // ADMIN uniquement
+    // ============================================================
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<SpecialiteMedicale> createSpecialite(
-            @RequestBody SpecialiteMedicale specialiteMedicale
+    public ResponseEntity<SpecialiteMedicaleResponse> createSpecialite(
+            @RequestBody SpecialiteMedicaleRequest request
     ) {
+
+        SpecialiteMedicale specialiteMedicale =
+                new SpecialiteMedicale(
+                        request.getNom(),
+                        request.getDescription(),
+                        request.getActif()
+                );
 
         SpecialiteMedicale createdSpecialite =
                 specialiteMedicaleService.createSpecialite(
                         specialiteMedicale
                 );
 
-        return ResponseEntity.ok(createdSpecialite);
+        return ResponseEntity.ok(
+                toResponse(createdSpecialite)
+        );
     }
 
-    // Récupérer toutes les spécialités
-    @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
+    // ============================================================
+    // RÉCUPÉRER TOUTES LES SPÉCIALITÉS
+    // PUBLIC
+    // ============================================================
+
+    @PermitAll
     @GetMapping
-    public ResponseEntity<List<SpecialiteMedicale>>
+    public ResponseEntity<List<SpecialiteMedicaleResponse>>
     getAllSpecialites() {
 
-        return ResponseEntity.ok(
+        List<SpecialiteMedicaleResponse> specialites =
                 specialiteMedicaleService.getAllSpecialites()
-        );
+                        .stream()
+                        .map(SpecialiteMedicaleController::toResponse)
+                        .toList();
+
+        return ResponseEntity.ok(specialites);
     }
 
-    // Récupérer uniquement les spécialités actives
-    @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
+    // ============================================================
+    // RÉCUPÉRER UNIQUEMENT LES SPÉCIALITÉS ACTIVES
+    // PUBLIC
+    // ============================================================
+
+    @PermitAll
     @GetMapping("/active")
-    public ResponseEntity<List<SpecialiteMedicale>>
+    public ResponseEntity<List<SpecialiteMedicaleResponse>>
     getActiveSpecialites() {
 
-        return ResponseEntity.ok(
+        List<SpecialiteMedicaleResponse> specialites =
                 specialiteMedicaleService.getActiveSpecialites()
-        );
+                        .stream()
+                        .map(SpecialiteMedicaleController::toResponse)
+                        .toList();
+
+        return ResponseEntity.ok(specialites);
     }
 
-    // Récupérer une spécialité par ID
-    @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
+    // ============================================================
+    // RÉCUPÉRER UNE SPÉCIALITÉ PAR ID
+    // PUBLIC
+    // ============================================================
+
+    @PermitAll
     @GetMapping("/{id}")
-    public ResponseEntity<SpecialiteMedicale> getSpecialiteById(
+    public ResponseEntity<SpecialiteMedicaleResponse>
+    getSpecialiteById(
             @PathVariable Long id
     ) {
 
         return specialiteMedicaleService
                 .getSpecialiteById(id)
+                .map(SpecialiteMedicaleController::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Modifier une spécialité
+    // ============================================================
+    // MODIFIER UNE SPÉCIALITÉ
+    // ADMIN uniquement
+    // ============================================================
+
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<SpecialiteMedicale> updateSpecialite(
+    public ResponseEntity<SpecialiteMedicaleResponse>
+    updateSpecialite(
             @PathVariable Long id,
-            @RequestBody SpecialiteMedicale specialiteMedicale
+            @RequestBody SpecialiteMedicaleRequest request
     ) {
+
+        SpecialiteMedicale specialiteMedicale =
+                new SpecialiteMedicale(
+                        request.getNom(),
+                        request.getDescription(),
+                        request.getActif()
+                );
 
         SpecialiteMedicale updatedSpecialite =
                 specialiteMedicaleService.updateSpecialite(
@@ -93,10 +144,16 @@ public class SpecialiteMedicaleController {
                         specialiteMedicale
                 );
 
-        return ResponseEntity.ok(updatedSpecialite);
+        return ResponseEntity.ok(
+                toResponse(updatedSpecialite)
+        );
     }
 
-    // Supprimer une spécialité
+    // ============================================================
+    // SUPPRIMER UNE SPÉCIALITÉ
+    // ADMIN uniquement
+    // ============================================================
+
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSpecialite(
@@ -106,5 +163,21 @@ public class SpecialiteMedicaleController {
         specialiteMedicaleService.deleteSpecialite(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    // ============================================================
+    // CONVERSION ENTITY → RESPONSE
+    // ============================================================
+
+    private static SpecialiteMedicaleResponse toResponse(
+            SpecialiteMedicale specialiteMedicale
+    ) {
+
+        return new SpecialiteMedicaleResponse(
+                specialiteMedicale.getId(),
+                specialiteMedicale.getNom(),
+                specialiteMedicale.getDescription(),
+                specialiteMedicale.getActif()
+        );
     }
 }

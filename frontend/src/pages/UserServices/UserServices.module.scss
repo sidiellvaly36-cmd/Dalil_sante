@@ -1,0 +1,30 @@
+@use '@/styles/variables' as *;
+
+.searchInput {
+  max-width: 400px;
+  margin-bottom: $spacing-lg;
+}
+
+.centerState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.card {
+  height: 100%;
+}
+
+.etablissementsList {
+  margin-top: $spacing-sm;
+  padding-top: $spacing-sm;
+  border-top: 1px solid $color-border-light;
+}
+
+.etablissementsTitle {
+  font-size: 12px;
+  color: $color-text-tertiary;
+  margin-bottom: 4px;
+  display: block;
+}

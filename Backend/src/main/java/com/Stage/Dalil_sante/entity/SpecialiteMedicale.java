@@ -27,6 +27,7 @@ public class SpecialiteMedicale {
 
     @Column(nullable = false)
     private Boolean actif = true;
+
     @ManyToMany(mappedBy = "specialites")
     private List<Utilisateur> utilisateurs = new ArrayList<>();
 
@@ -73,5 +74,13 @@ public class SpecialiteMedicale {
 
     public void setActif(Boolean actif) {
         this.actif = actif;
+    }
+
+    public List<Utilisateur> getUtilisateurs() {
+        return utilisateurs;
+    }
+
+    public void setUtilisateurs(List<Utilisateur> utilisateurs) {
+        this.utilisateurs = utilisateurs;
     }
 }

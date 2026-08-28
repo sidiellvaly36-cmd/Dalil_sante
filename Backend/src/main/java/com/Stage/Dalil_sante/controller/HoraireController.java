@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.Stage.Dalil_sante.dto.HoraireRequest;
+import com.Stage.Dalil_sante.dto.HoraireResponse;
 import com.Stage.Dalil_sante.entity.Horaire;
 import com.Stage.Dalil_sante.service.HoraireService;
 
@@ -32,40 +34,54 @@ public class HoraireController {
     // Ajouter un horaire à un établissement
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/etablissement/{etablissementId}")
-    public ResponseEntity<Horaire> createHoraire(
+    public ResponseEntity<HoraireResponse> createHoraire(
             @PathVariable Long etablissementId,
-            @RequestBody Horaire horaire
+            @RequestBody HoraireRequest request
     ) {
 
-        return ResponseEntity.ok(
+        Horaire horaire = new Horaire(
+                request.getJourSemaine(),
+                request.getHeureOuverture(),
+                request.getHeureFermeture(),
+                request.getFerme(),
+                null
+        );
+
+        Horaire createdHoraire =
                 horaireService.createHoraire(
                         etablissementId,
                         horaire
-                )
-        );
+                );
+
+        return ResponseEntity.ok(toResponse(createdHoraire));
     }
 
     // Récupérer tous les horaires
     @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
     @GetMapping
-    public ResponseEntity<List<Horaire>>
+    public ResponseEntity<List<HoraireResponse>>
     getAllHoraires() {
 
-        return ResponseEntity.ok(
+        List<HoraireResponse> horaires =
                 horaireService.getAllHoraires()
-        );
+                        .stream()
+                        .map(HoraireController::toResponse)
+                        .toList();
+
+        return ResponseEntity.ok(horaires);
     }
 
     // Récupérer un horaire par ID
     @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
     @GetMapping("/{id}")
-    public ResponseEntity<Horaire>
+    public ResponseEntity<HoraireResponse>
     getHoraireById(
             @PathVariable Long id
     ) {
 
         return horaireService
                 .getHoraireById(id)
+                .map(HoraireController::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -73,23 +89,27 @@ public class HoraireController {
     // Récupérer tous les horaires d'un établissement
     @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
     @GetMapping("/etablissement/{etablissementId}")
-    public ResponseEntity<List<Horaire>>
+    public ResponseEntity<List<HoraireResponse>>
     getHorairesByEtablissement(
             @PathVariable Long etablissementId
     ) {
 
-        return ResponseEntity.ok(
+        List<HoraireResponse> horaires =
                 horaireService
                         .getHorairesByEtablissement(
                                 etablissementId
                         )
-        );
+                        .stream()
+                        .map(HoraireController::toResponse)
+                        .toList();
+
+        return ResponseEntity.ok(horaires);
     }
 
     // Récupérer l'horaire d'un jour précis
     @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
     @GetMapping("/etablissement/{etablissementId}/jour/{jourSemaine}")
-    public ResponseEntity<Horaire>
+    public ResponseEntity<HoraireResponse>
     getHoraireByJour(
             @PathVariable Long etablissementId,
             @PathVariable DayOfWeek jourSemaine
@@ -100,6 +120,7 @@ public class HoraireController {
                         etablissementId,
                         jourSemaine
                 )
+                .map(HoraireController::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -107,18 +128,27 @@ public class HoraireController {
     // Modifier un horaire
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<Horaire>
+    public ResponseEntity<HoraireResponse>
     updateHoraire(
             @PathVariable Long id,
-            @RequestBody Horaire horaire
+            @RequestBody HoraireRequest request
     ) {
 
-        return ResponseEntity.ok(
+        Horaire horaire = new Horaire(
+                request.getJourSemaine(),
+                request.getHeureOuverture(),
+                request.getHeureFermeture(),
+                request.getFerme(),
+                null
+        );
+
+        Horaire updatedHoraire =
                 horaireService.updateHoraire(
                         id,
                         horaire
-                )
-        );
+                );
+
+        return ResponseEntity.ok(toResponse(updatedHoraire));
     }
 
     // Supprimer un horaire
@@ -132,5 +162,23 @@ public class HoraireController {
         horaireService.deleteHoraire(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    private static HoraireResponse toResponse(
+            Horaire horaire
+    ) {
+
+        Long etablissementId = horaire.getEtablissement() != null
+                ? horaire.getEtablissement().getId()
+                : null;
+
+        return new HoraireResponse(
+                horaire.getId(),
+                horaire.getJourSemaine(),
+                horaire.getHeureOuverture(),
+                horaire.getHeureFermeture(),
+                horaire.getFerme(),
+                etablissementId
+        );
     }
 }

@@ -1,0 +1,157 @@
+@use '@/styles/variables' as *;
+
+.layout {
+  min-height: 100vh;
+}
+
+// ===== Sidebar =====
+.sider {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: $z-sider;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.logoWrapper {
+  height: $header-height;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: 0 $spacing-lg;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.logoIcon {
+  font-size: 26px;
+  color: $color-primary;
+  flex-shrink: 0;
+}
+
+.logoText {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+// ===== Content wrapper (shifts right of the fixed sider) =====
+.contentLayout {
+  margin-left: $sider-width;
+  transition: margin-left 0.2s;
+  min-height: 100vh;
+}
+
+.contentLayoutCollapsed {
+  margin-left: $sider-collapsed-width;
+}
+
+// ===== Header =====
+.header {
+  position: sticky;
+  top: 0;
+  z-index: $z-header;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 $spacing-lg;
+  background-color: $color-bg-container;
+  box-shadow: $shadow-sm;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.collapseButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: $radius-md;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  color: $color-text-secondary;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: $color-bg-layout;
+  }
+}
+
+.pageTitle {
+  font-size: 16px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userMenu {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  cursor: pointer;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-md;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: $color-bg-layout;
+  }
+}
+
+.avatar {
+  background-color: $color-primary;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+
+  @media (max-width: $breakpoint-sm) {
+    display: none;
+  }
+}
+
+.userName {
+  font-size: 13px;
+}
+
+.userRole {
+  font-size: 12px;
+}
+
+// ===== Content =====
+.content {
+  margin: $spacing-lg;
+  min-height: calc(100vh - #{$header-height} - #{$spacing-lg} * 2);
+}
+
+:global(html[dir='rtl']) {
+  .sider {
+    left: auto;
+    right: 0;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .contentLayout {
+    margin-left: 0;
+    margin-right: $sider-width;
+  }
+
+  .contentLayoutCollapsed {
+    margin-right: $sider-collapsed-width;
+  }
+}

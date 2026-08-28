@@ -1,0 +1,253 @@
+.page {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.hero {
+  position: relative;
+
+  padding: 64px 48px;
+
+  background:
+    radial-gradient(
+      circle at 85% 20%,
+      rgba(13, 110, 253, 0.12),
+      transparent 32%
+    ),
+    linear-gradient(135deg, #eef6ff 0%, #ffffff 65%);
+
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+
+  max-width: 850px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.heroLogoWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.heroLogo {
+  width: 150px;
+  height: auto;
+  object-fit: contain;
+}
+
+.eyebrow,
+.sectionEyebrow {
+  display: inline-block;
+
+  color: #0d6efd;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.heroTitle {
+  margin: 14px 0 18px !important;
+
+  color: #102a43 !important;
+  font-size: clamp(34px, 5vw, 58px) !important;
+  line-height: 1.08 !important;
+  font-weight: 800 !important;
+}
+
+.heroDescription {
+  max-width: 720px;
+  margin: 0 auto 28px !important;
+
+  color: #52606d;
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+.heroActions {
+  justify-content: center;
+}
+
+.heroActions :global(.ant-btn-primary) {
+  background: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.optionalText {
+  display: block;
+  margin-top: 16px;
+
+  color: #7b8794;
+  font-size: 13px;
+}
+
+.servicesSection {
+  padding: 64px 0 48px;
+}
+
+.sectionHeader {
+  max-width: 760px;
+  margin: 0 auto 36px;
+
+  text-align: center;
+}
+
+.sectionTitle {
+  margin: 10px 0 12px !important;
+
+  color: #102a43 !important;
+  font-weight: 750 !important;
+}
+
+.sectionDescription {
+  margin-bottom: 0 !important;
+
+  color: #627d98;
+  font-size: 16px;
+}
+
+.serviceCard {
+  height: 100%;
+
+  border: 1px solid #e4eaf0;
+  border-radius: 18px;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.serviceCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.serviceIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 52px;
+  height: 52px;
+  margin-bottom: 18px;
+
+  color: #0d6efd;
+  font-size: 25px;
+
+  background: #eaf3ff;
+  border-radius: 14px;
+}
+
+.serviceTitle {
+  margin-bottom: 10px !important;
+
+  color: #102a43 !important;
+}
+
+.serviceDescription {
+  min-height: 72px;
+  margin-bottom: 8px !important;
+
+  color: #627d98;
+  line-height: 1.7;
+}
+
+.serviceLink {
+  padding-inline: 0;
+
+  font-weight: 600;
+}
+
+.accountSection {
+  margin-top: 20px;
+  padding: 32px;
+
+  background: #f0fdf4;
+  border: 1px solid #d7f3df;
+  border-radius: 20px;
+}
+
+.accountContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.accountTitle {
+  margin-bottom: 8px !important;
+
+  color: #166534 !important;
+}
+
+.accountDescription {
+  max-width: 700px;
+  margin-bottom: 0 !important;
+
+  color: #4d6b57;
+}
+
+@media (max-width: 992px) {
+  .hero {
+    padding: 52px 32px;
+  }
+
+  .servicesSection {
+    padding-top: 48px;
+  }
+
+  .accountContent {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero {
+    padding: 40px 20px;
+
+    border-radius: 18px;
+  }
+
+  .heroLogo {
+    width: 120px;
+  }
+
+  .heroTitle {
+    font-size: 34px !important;
+  }
+
+  .heroDescription {
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .heroActions {
+    width: 100%;
+  }
+
+  .heroActions :global(.ant-btn) {
+    width: 100%;
+  }
+
+  .servicesSection {
+    padding: 40px 0 32px;
+  }
+
+  .sectionTitle {
+    font-size: 26px !important;
+  }
+
+  .accountSection {
+    padding: 24px 20px;
+  }
+
+  .accountContent :global(.ant-btn) {
+    width: 100%;
+  }
+}

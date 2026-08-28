@@ -1,0 +1,98 @@
+@use '@/styles/variables' as *;
+
+.layout {
+  min-height: 100vh;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: $z-header;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-lg;
+  padding: 0 $spacing-lg;
+  background-color: $color-bg-container;
+  box-shadow: $shadow-sm;
+  height: $header-height;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.logoImage {
+  display: block;
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+
+  @media (max-width: $breakpoint-sm) {
+    height: 34px;
+  }
+}
+
+.nav {
+  flex: 1;
+  min-width: 0;
+  border-bottom: none;
+  justify-content: center;
+
+  @media (max-width: $breakpoint-md) {
+    display: none;
+  }
+}
+
+.right {
+  flex-shrink: 0;
+}
+
+.userMenu {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  cursor: pointer;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-md;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: $color-bg-layout;
+  }
+}
+
+.avatar {
+  background-color: $color-primary;
+}
+
+.userName {
+  @media (max-width: $breakpoint-sm) {
+    display: none;
+  }
+}
+
+.burger {
+  display: none;
+
+  @media (max-width: $breakpoint-md) {
+    display: inline-flex;
+  }
+}
+
+.content {
+  padding: $spacing-lg;
+  min-height: calc(100vh - #{$header-height} * 2);
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.footer {
+  text-align: center;
+  padding: $spacing-lg;
+}

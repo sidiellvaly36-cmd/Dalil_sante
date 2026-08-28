@@ -1,0 +1,67 @@
+@use '@/styles/variables' as *;
+
+.centerState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+}
+
+.chartCard {
+  height: 100%;
+
+  // Le header AntD (title + extra) ne se replie pas nativement : sur les
+  // conteneurs très étroits (ex. ADMIN mobile 390px), le Segmented
+  // Jour/Mois/Année forçait une largeur supérieure à celle disponible et
+  // provoquait un débordement horizontal de toute la page.
+  :global(.ant-card-head-wrapper) {
+    flex-wrap: wrap;
+  }
+
+  :global(.ant-card-extra) {
+    max-width: 100%;
+  }
+
+  // Le Legend de Recharts fixe sa propre largeur en style inline calculée à
+  // partir du texte non replié - sur les colonnes étroites (mobile), cela
+  // dépasse la carte au lieu de se replier sur plusieurs lignes.
+  :global(.recharts-legend-wrapper) {
+    width: 100% !important;
+    max-width: 100%;
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    :global(.ant-card-extra) {
+      width: 100%;
+      margin-left: 0;
+    }
+
+    :global(.ant-segmented) {
+      width: 100%;
+    }
+
+    :global(.ant-segmented-group) {
+      width: 100%;
+    }
+
+    :global(.ant-segmented-item) {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    :global(.ant-segmented-item-label) {
+      min-width: 0;
+      padding-left: 6px;
+      padding-right: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+.tableScrollWrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}

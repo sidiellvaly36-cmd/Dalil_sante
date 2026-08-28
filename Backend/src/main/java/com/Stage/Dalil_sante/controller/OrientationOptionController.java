@@ -1,12 +1,24 @@
 package com.Stage.Dalil_sante.controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.Stage.Dalil_sante.dto.OrientationOptionRequest;
+import com.Stage.Dalil_sante.dto.OrientationOptionResponse;
 import com.Stage.Dalil_sante.entity.OrientationOption;
 import com.Stage.Dalil_sante.service.OrientationOptionService;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import jakarta.annotation.security.PermitAll;
 
 @RestController
 @RequestMapping("/api/orientation/options")
@@ -20,12 +32,25 @@ public class OrientationOptionController {
         this.orientationOptionService = orientationOptionService;
     }
 
-    // Ajouter une option à une question
+    // ============================================================
+    // AJOUTER UNE OPTION À UNE QUESTION
+    // ADMIN uniquement
+    // ============================================================
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/question/{questionId}")
-    public ResponseEntity<OrientationOption> createOption(
+    public ResponseEntity<OrientationOptionResponse> createOption(
             @PathVariable Long questionId,
-            @RequestBody OrientationOption orientationOption
+            @RequestBody OrientationOptionRequest request
     ) {
+
+        OrientationOption orientationOption =
+                new OrientationOption(
+                        request.getOptionText(),
+                        request.getOptionOrder(),
+                        request.getActive(),
+                        null
+                );
 
         OrientationOption createdOption =
                 orientationOptionService.createOption(
@@ -33,53 +58,92 @@ public class OrientationOptionController {
                         orientationOption
                 );
 
-        return ResponseEntity.ok(createdOption);
+        return ResponseEntity.ok(
+                toResponse(createdOption)
+        );
     }
 
-    // Récupérer toutes les options d'une question
+    // ============================================================
+    // RÉCUPÉRER TOUTES LES OPTIONS D'UNE QUESTION
+    // PUBLIC
+    // ============================================================
+
+    @PermitAll
     @GetMapping("/question/{questionId}")
-    public ResponseEntity<List<OrientationOption>>
+    public ResponseEntity<List<OrientationOptionResponse>>
     getOptionsByQuestionId(
             @PathVariable Long questionId
     ) {
 
-        return ResponseEntity.ok(
+        List<OrientationOptionResponse> options =
                 orientationOptionService
                         .getOptionsByQuestionId(questionId)
-        );
+                        .stream()
+                        .map(OrientationOptionController::toResponse)
+                        .toList();
+
+        return ResponseEntity.ok(options);
     }
 
-    // Récupérer les options actives d'une question
+    // ============================================================
+    // RÉCUPÉRER LES OPTIONS ACTIVES D'UNE QUESTION
+    // PUBLIC
+    // ============================================================
+
+    @PermitAll
     @GetMapping("/question/{questionId}/active")
-    public ResponseEntity<List<OrientationOption>>
+    public ResponseEntity<List<OrientationOptionResponse>>
     getActiveOptionsByQuestionId(
             @PathVariable Long questionId
     ) {
 
-        return ResponseEntity.ok(
+        List<OrientationOptionResponse> options =
                 orientationOptionService
                         .getActiveOptionsByQuestionId(questionId)
-        );
+                        .stream()
+                        .map(OrientationOptionController::toResponse)
+                        .toList();
+
+        return ResponseEntity.ok(options);
     }
 
-    // Récupérer une option par ID
+    // ============================================================
+    // RÉCUPÉRER UNE OPTION PAR ID
+    // PUBLIC
+    // ============================================================
+
+    @PermitAll
     @GetMapping("/{id}")
-    public ResponseEntity<OrientationOption> getOptionById(
+    public ResponseEntity<OrientationOptionResponse> getOptionById(
             @PathVariable Long id
     ) {
 
         return orientationOptionService
                 .getOptionById(id)
+                .map(OrientationOptionController::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Modifier une option
+    // ============================================================
+    // MODIFIER UNE OPTION
+    // ADMIN uniquement
+    // ============================================================
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<OrientationOption> updateOption(
+    public ResponseEntity<OrientationOptionResponse> updateOption(
             @PathVariable Long id,
-            @RequestBody OrientationOption orientationOption
+            @RequestBody OrientationOptionRequest request
     ) {
+
+        OrientationOption orientationOption =
+                new OrientationOption(
+                        request.getOptionText(),
+                        request.getOptionOrder(),
+                        request.getActive(),
+                        null
+                );
 
         OrientationOption updatedOption =
                 orientationOptionService.updateOption(
@@ -87,10 +151,17 @@ public class OrientationOptionController {
                         orientationOption
                 );
 
-        return ResponseEntity.ok(updatedOption);
+        return ResponseEntity.ok(
+                toResponse(updatedOption)
+        );
     }
 
-    // Supprimer une option
+    // ============================================================
+    // SUPPRIMER UNE OPTION
+    // ADMIN uniquement
+    // ============================================================
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOption(
             @PathVariable Long id
@@ -99,5 +170,27 @@ public class OrientationOptionController {
         orientationOptionService.deleteOption(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    // ============================================================
+    // CONVERSION ENTITY → RESPONSE
+    // ============================================================
+
+    private static OrientationOptionResponse toResponse(
+            OrientationOption orientationOption
+    ) {
+
+        Long questionId =
+                orientationOption.getQuestion() != null
+                        ? orientationOption.getQuestion().getId()
+                        : null;
+
+        return new OrientationOptionResponse(
+                orientationOption.getId(),
+                orientationOption.getOptionText(),
+                orientationOption.getOptionOrder(),
+                orientationOption.getActive(),
+                questionId
+        );
     }
 }

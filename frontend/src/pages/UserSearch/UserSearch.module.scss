@@ -1,0 +1,118 @@
+@use '@/styles/variables' as *;
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+}
+
+.searchInput {
+  flex: 1 1 260px;
+}
+
+.typeSelect,
+.specialiteSelect {
+  flex: 0 1 220px;
+}
+
+.centerState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.card {
+  height: 100%;
+}
+
+.nearestCard {
+  border: 1.5px solid #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+}
+
+.nearestTag {
+  margin-bottom: $spacing-xs;
+  font-weight: 600;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $spacing-sm;
+}
+
+.distanceTag {
+  flex-shrink: 0;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  color: $color-text-secondary;
+  font-size: 13px;
+}
+
+.tagsRow {
+  margin-top: $spacing-sm;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.locationLink {
+  padding-left: 0 !important;
+  margin-top: $spacing-xs;
+}
+
+.cardActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 $spacing-md;
+  margin-top: $spacing-xs;
+}
+
+.noLocationText {
+  display: block;
+  margin-top: $spacing-sm;
+  font-size: 12.5px;
+}
+
+// ===== Mise en page liste + carte =====
+.layout {
+  display: flex;
+  gap: $spacing-lg;
+  align-items: flex-start;
+
+  @media (max-width: $breakpoint-lg) {
+    flex-direction: column-reverse;
+  }
+}
+
+.resultsColumn {
+  flex: 1 1 55%;
+  min-width: 0;
+}
+
+.mapColumn {
+  flex: 1 1 45%;
+  min-width: 0;
+  position: sticky;
+  top: $spacing-md;
+  scroll-margin-top: $spacing-md;
+
+  @media (max-width: $breakpoint-lg) {
+    position: static;
+    width: 100%;
+  }
+}
+
+.mapHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: $spacing-sm;
+}

@@ -1,0 +1,44 @@
+@use '@/design/tokens' as tokens;
+@use '@/styles/variables' as *;
+
+.side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background-color: tokens.$mint-50;
+  padding: $spacing-lg;
+}
+
+.card {
+  width: 100%;
+  max-width: 400px;
+}
+
+.header {
+  margin-bottom: $spacing-xl;
+}
+
+.title {
+  font-family: tokens.$font-display;
+  font-weight: tokens.$fw-extrabold;
+  font-size: 26px;
+  color: tokens.$ink-900;
+  margin: 0 0 6px;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  font-family: tokens.$font-body;
+  font-size: 14px;
+  color: tokens.$ink-600;
+  margin: 0;
+}
+
+.footer {
+  margin-top: $spacing-lg;
+  text-align: center;
+  font-family: tokens.$font-body;
+  font-size: 13px;
+  color: tokens.$ink-400;
+}

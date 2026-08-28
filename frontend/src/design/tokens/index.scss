@@ -1,0 +1,5 @@
+// نقطة استيراد موحّدة لكل رموز التصميم (Design Tokens).
+// استخدم دائمًا: @use '@/design/tokens' as tokens; ثم tokens.$brand-teal-600 ...
+@forward './colors';
+@forward './typography';
+@forward './mixins';

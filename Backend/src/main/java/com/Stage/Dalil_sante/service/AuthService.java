@@ -50,6 +50,12 @@ public class AuthService {
             throw new RuntimeException("Mot de passe incorrect.");
         }
 
+        if (Boolean.FALSE.equals(utilisateur.getActif())) {
+            throw new RuntimeException(
+                    "Ce compte est désactivé. Veuillez contacter l'administrateur."
+            );
+        }
+
         String token = jwtService.generateToken(utilisateur.getEmail());
 
         return new LoginResponse(

@@ -1,0 +1,63 @@
+@use '@/styles/variables' as *;
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+}
+
+.searchInput {
+  flex: 1 1 260px;
+}
+
+.categorieSelect {
+  flex: 0 1 260px;
+}
+
+.centerState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.card {
+  height: 100%;
+  transition: box-shadow 0.15s;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $spacing-sm;
+  margin-bottom: 4px;
+}
+
+.excerpt {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: $color-text-secondary;
+  margin: $spacing-xs 0;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  color: $color-text-tertiary;
+  font-size: 12px;
+  margin-top: $spacing-sm;
+}
+
+.readButton {
+  padding-left: 0 !important;
+  margin-top: $spacing-sm;
+}

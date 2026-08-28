@@ -14,8 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.Stage.Dalil_sante.dto.EtablissementCreateRequest;
+import com.Stage.Dalil_sante.dto.EtablissementResponse;
+import com.Stage.Dalil_sante.dto.EtablissementUpdateRequest;
+import com.Stage.Dalil_sante.dto.IdNomResponse;
 import com.Stage.Dalil_sante.entity.EtablissementSante;
 import com.Stage.Dalil_sante.service.EtablissementSanteService;
+
+import jakarta.annotation.security.PermitAll;
 
 @RestController
 @RequestMapping("/api/etablissements")
@@ -29,134 +35,214 @@ public class EtablissementSanteController {
         this.etablissementService = etablissementService;
     }
 
-    // Créer un établissement
+    // ============================================================
+    // CRÉER UN ÉTABLISSEMENT
+    // ADMIN uniquement
+    // ============================================================
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/type/{typeId}")
-    public ResponseEntity<EtablissementSante> createEtablissement(
+    public ResponseEntity<EtablissementResponse> createEtablissement(
             @PathVariable Long typeId,
-            @RequestBody EtablissementSante etablissement
+            @RequestBody EtablissementCreateRequest request
     ) {
+        EtablissementSante etablissement = new EtablissementSante(
+                request.getNom(),
+                request.getTelephone(),
+                request.getEmail(),
+                request.getDescription(),
+                request.getOuvert24h(),
+                request.getActif(),
+                null
+        );
 
-        return ResponseEntity.ok(
+        EtablissementSante created =
                 etablissementService.createEtablissement(
                         typeId,
                         etablissement
-                )
-        );
+                );
+
+        return ResponseEntity.ok(toResponse(created));
     }
 
-    // Récupérer tous les établissements
-    @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
+    // ============================================================
+    // RÉCUPÉRER TOUS LES ÉTABLISSEMENTS
+    // PUBLIC
+    // ============================================================
+
+    @PermitAll
     @GetMapping
-    public ResponseEntity<List<EtablissementSante>>
+    public ResponseEntity<List<EtablissementResponse>>
     getAllEtablissements() {
 
-        return ResponseEntity.ok(
+        List<EtablissementResponse> etablissements =
                 etablissementService.getAllEtablissements()
-        );
+                        .stream()
+                        .map(EtablissementSanteController::toResponse)
+                        .toList();
+
+        return ResponseEntity.ok(etablissements);
     }
 
-    // Récupérer les établissements actifs
-    @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
+    // ============================================================
+    // RÉCUPÉRER LES ÉTABLISSEMENTS ACTIFS
+    // PUBLIC
+    // ============================================================
+
+    @PermitAll
     @GetMapping("/active")
-    public ResponseEntity<List<EtablissementSante>>
+    public ResponseEntity<List<EtablissementResponse>>
     getActiveEtablissements() {
 
-        return ResponseEntity.ok(
+        List<EtablissementResponse> etablissements =
                 etablissementService.getActiveEtablissements()
-        );
+                        .stream()
+                        .map(EtablissementSanteController::toResponse)
+                        .toList();
+
+        return ResponseEntity.ok(etablissements);
     }
 
-    // Récupérer un établissement par ID
-    @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
+    // ============================================================
+    // RÉCUPÉRER UN ÉTABLISSEMENT PAR ID
+    // PUBLIC
+    // ============================================================
+
+    @PermitAll
     @GetMapping("/{id}")
-    public ResponseEntity<EtablissementSante>
+    public ResponseEntity<EtablissementResponse>
     getEtablissementById(
             @PathVariable Long id
     ) {
 
         return etablissementService
                 .getEtablissementById(id)
+                .map(EtablissementSanteController::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Rechercher par nom
-    @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
+    // ============================================================
+    // RECHERCHER PAR NOM
+    // PUBLIC
+    // ============================================================
+
+    @PermitAll
     @GetMapping("/search")
-    public ResponseEntity<List<EtablissementSante>>
+    public ResponseEntity<List<EtablissementResponse>>
     searchByNom(
             @RequestParam String nom
     ) {
 
-        return ResponseEntity.ok(
+        List<EtablissementResponse> etablissements =
                 etablissementService.searchByNom(nom)
-        );
+                        .stream()
+                        .map(EtablissementSanteController::toResponse)
+                        .toList();
+
+        return ResponseEntity.ok(etablissements);
     }
 
-    // Récupérer les établissements par type
-    @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
+    // ============================================================
+    // RÉCUPÉRER LES ÉTABLISSEMENTS PAR TYPE
+    // PUBLIC
+    // ============================================================
+
+    @PermitAll
     @GetMapping("/type/{typeId}")
-    public ResponseEntity<List<EtablissementSante>>
+    public ResponseEntity<List<EtablissementResponse>>
     getByType(
             @PathVariable Long typeId
     ) {
 
-        return ResponseEntity.ok(
+        List<EtablissementResponse> etablissements =
                 etablissementService.getByType(typeId)
-        );
+                        .stream()
+                        .map(EtablissementSanteController::toResponse)
+                        .toList();
+
+        return ResponseEntity.ok(etablissements);
     }
 
-    // Ajouter une spécialité à un établissement
+    // ============================================================
+    // AJOUTER UNE SPÉCIALITÉ À UN ÉTABLISSEMENT
+    // ADMIN uniquement
+    // ============================================================
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{etablissementId}/specialites/{specialiteId}")
-    public ResponseEntity<EtablissementSante> addSpecialite(
+    public ResponseEntity<EtablissementResponse> addSpecialite(
             @PathVariable Long etablissementId,
             @PathVariable Long specialiteId
     ) {
 
-        return ResponseEntity.ok(
+        EtablissementSante updated =
                 etablissementService.addSpecialite(
                         etablissementId,
                         specialiteId
-                )
-        );
+                );
+
+        return ResponseEntity.ok(toResponse(updated));
     }
 
-    // Ajouter un service à un établissement
+    // ============================================================
+    // AJOUTER UN SERVICE À UN ÉTABLISSEMENT
+    // ADMIN uniquement
+    // ============================================================
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{etablissementId}/services/{serviceId}")
-    public ResponseEntity<EtablissementSante> addService(
+    public ResponseEntity<EtablissementResponse> addService(
             @PathVariable Long etablissementId,
             @PathVariable Long serviceId
     ) {
 
-        return ResponseEntity.ok(
+        EtablissementSante updated =
                 etablissementService.addService(
                         etablissementId,
                         serviceId
-                )
-        );
+                );
+
+        return ResponseEntity.ok(toResponse(updated));
     }
 
-    // Modifier un établissement
+    // ============================================================
+    // MODIFIER UN ÉTABLISSEMENT
+    // ADMIN uniquement
+    // ============================================================
+
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<EtablissementSante>
+    public ResponseEntity<EtablissementResponse>
     updateEtablissement(
             @PathVariable Long id,
-            @RequestBody EtablissementSante etablissement
+            @RequestBody EtablissementUpdateRequest request
     ) {
 
-        return ResponseEntity.ok(
+        EtablissementSante etablissement = new EtablissementSante(
+                request.getNom(),
+                request.getTelephone(),
+                request.getEmail(),
+                request.getDescription(),
+                request.getOuvert24h(),
+                request.getActif(),
+                null
+        );
+
+        EtablissementSante updated =
                 etablissementService.updateEtablissement(
                         id,
                         etablissement
-                )
-        );
+                );
+
+        return ResponseEntity.ok(toResponse(updated));
     }
 
-    // Supprimer un établissement
+    // ============================================================
+    // SUPPRIMER UN ÉTABLISSEMENT
+    // ADMIN uniquement
+    // ============================================================
+
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEtablissement(
@@ -166,5 +252,56 @@ public class EtablissementSanteController {
         etablissementService.deleteEtablissement(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    // ============================================================
+    // CONVERSION ENTITY → RESPONSE
+    // ============================================================
+
+    private static EtablissementResponse toResponse(
+            EtablissementSante etablissement
+    ) {
+
+        List<IdNomResponse> specialites =
+                etablissement.getSpecialites()
+                        .stream()
+                        .map(specialite -> new IdNomResponse(
+                                specialite.getId(),
+                                specialite.getNom()
+                        ))
+                        .toList();
+
+        List<IdNomResponse> services =
+                etablissement.getServices()
+                        .stream()
+                        .map(service -> new IdNomResponse(
+                                service.getId(),
+                                service.getNom()
+                        ))
+                        .toList();
+
+        Long typeEtablissementId =
+                etablissement.getTypeEtablissement() != null
+                        ? etablissement.getTypeEtablissement().getId()
+                        : null;
+
+        String typeEtablissementNom =
+                etablissement.getTypeEtablissement() != null
+                        ? etablissement.getTypeEtablissement().getNom()
+                        : null;
+
+        return new EtablissementResponse(
+                etablissement.getId(),
+                etablissement.getNom(),
+                etablissement.getTelephone(),
+                etablissement.getEmail(),
+                etablissement.getDescription(),
+                etablissement.getOuvert24h(),
+                etablissement.getActif(),
+                typeEtablissementId,
+                typeEtablissementNom,
+                specialites,
+                services
+        );
     }
 }

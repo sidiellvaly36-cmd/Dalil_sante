@@ -1,0 +1,116 @@
+@use './variables' as *;
+
+// ==========================================================================
+// إعادة تهيئة عامة (Reset) + أنماط أساسية للتطبيق بأكمله
+// ==========================================================================
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+html[dir='rtl'] body {
+  font-family: 'Tahoma', 'Arial', sans-serif;
+}
+
+html[dir='rtl'] .ant-table,
+html[dir='rtl'] .ant-form,
+html[dir='rtl'] .ant-card,
+html[dir='rtl'] .ant-pagination {
+  text-align: right;
+}
+
+body {
+  font-family: $font-family-base;
+  color: $color-text-primary;
+  background-color: $color-bg-layout;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  height: 100%;
+  min-height: 100vh;
+}
+
+a {
+  color: $color-primary;
+  text-decoration: none;
+
+  &:hover {
+    color: color-mix(in srgb, $color-primary 85%, black);
+  }
+}
+
+// شريط تمرير أنيق لكامل التطبيق
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: $radius-sm;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.25);
+  }
+}
+
+// ==========================================================================
+// أدوات مساعدة عامة (Utility Classes)
+// ==========================================================================
+
+.text-secondary {
+  color: $color-text-secondary;
+}
+
+.text-tertiary {
+  color: $color-text-tertiary;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.language-switcher {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  z-index: 2000;
+}
+
+html[dir='rtl'] .language-switcher {
+  right: auto;
+  left: 16px;
+}
+
+// لون تمييز موحّد (رمال موريتانيا) يُستخدم داخل عناوين طبقة التصميم (src/design)
+.accent-text {
+  color: #e7b166;
+}

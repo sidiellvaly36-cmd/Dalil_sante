@@ -1,0 +1,17 @@
+@use '@/styles/variables' as *;
+
+.centerState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.questionCard {
+  margin-bottom: $spacing-md;
+}
+
+.optionItem {
+  padding: $spacing-xs 0;
+  color: $color-text-secondary;
+}

@@ -3,6 +3,7 @@ package com.Stage.Dalil_sante.service;
 import com.Stage.Dalil_sante.entity.Utilisateur;
 import com.Stage.Dalil_sante.repository.UtilisateurRepository;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,11 +13,14 @@ import java.util.Optional;
 public class UtilisateurService {
 
     private final UtilisateurRepository utilisateurRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UtilisateurService(
-            UtilisateurRepository utilisateurRepository
+            UtilisateurRepository utilisateurRepository,
+            PasswordEncoder passwordEncoder
     ) {
         this.utilisateurRepository = utilisateurRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // Créer un utilisateur
@@ -31,6 +35,10 @@ public class UtilisateurService {
                     "Un utilisateur avec cet email existe déjà"
             );
         }
+
+        utilisateur.setPassword(
+                passwordEncoder.encode(utilisateur.getPassword())
+        );
 
         return utilisateurRepository.save(utilisateur);
     }

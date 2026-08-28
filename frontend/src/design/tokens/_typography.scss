@@ -1,0 +1,14 @@
+// ==========================================================================
+// design/tokens/_typography.scss
+// نظام محدد للخطوط: خط عرض (Display) بشخصية واضحة لأسماء العناوين الكبيرة،
+// وخط نصي (Body) للقراءة الطويلة والنماذج. يُحمَّلان عبر Google Fonts في index.html.
+// ==========================================================================
+
+$font-display: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+$font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+$fw-regular: 400;
+$fw-medium: 500;
+$fw-semibold: 600;
+$fw-bold: 700;
+$fw-extrabold: 800;

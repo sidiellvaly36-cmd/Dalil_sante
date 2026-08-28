@@ -13,8 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.Stage.Dalil_sante.dto.ServiceMedicalRequest;
+import com.Stage.Dalil_sante.dto.ServiceMedicalResponse;
 import com.Stage.Dalil_sante.entity.ServiceMedical;
 import com.Stage.Dalil_sante.service.ServiceMedicalService;
+
+import jakarta.annotation.security.PermitAll;
 
 @RestController
 @RequestMapping("/api/services-medicaux")
@@ -28,63 +32,104 @@ public class ServiceMedicalController {
         this.serviceMedicalService = serviceMedicalService;
     }
 
-    // Ajouter un service médical
+    // ============================================================
+    // AJOUTER UN SERVICE MÉDICAL
+    // ADMIN uniquement
+    // ============================================================
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<ServiceMedical> createService(
-            @RequestBody ServiceMedical serviceMedical
+    public ResponseEntity<ServiceMedicalResponse> createService(
+            @RequestBody ServiceMedicalRequest request
     ) {
+
+        ServiceMedical serviceMedical = new ServiceMedical(
+                request.getNom(),
+                request.getDescription(),
+                request.getActif()
+        );
 
         ServiceMedical createdService =
                 serviceMedicalService.createService(
                         serviceMedical
                 );
 
-        return ResponseEntity.ok(createdService);
+        return ResponseEntity.ok(toResponse(createdService));
     }
 
-    // Récupérer tous les services médicaux
-    @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
+    // ============================================================
+    // RÉCUPÉRER TOUS LES SERVICES MÉDICAUX
+    // PUBLIC
+    // ============================================================
+
+    @PermitAll
     @GetMapping
-    public ResponseEntity<List<ServiceMedical>>
+    public ResponseEntity<List<ServiceMedicalResponse>>
     getAllServices() {
 
-        return ResponseEntity.ok(
+        List<ServiceMedicalResponse> services =
                 serviceMedicalService.getAllServices()
-        );
+                        .stream()
+                        .map(ServiceMedicalController::toResponse)
+                        .toList();
+
+        return ResponseEntity.ok(services);
     }
 
-    // Récupérer uniquement les services actifs
-    @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
+    // ============================================================
+    // RÉCUPÉRER UNIQUEMENT LES SERVICES ACTIFS
+    // PUBLIC
+    // ============================================================
+
+    @PermitAll
     @GetMapping("/active")
-    public ResponseEntity<List<ServiceMedical>>
+    public ResponseEntity<List<ServiceMedicalResponse>>
     getActiveServices() {
 
-        return ResponseEntity.ok(
+        List<ServiceMedicalResponse> services =
                 serviceMedicalService.getActiveServices()
-        );
+                        .stream()
+                        .map(ServiceMedicalController::toResponse)
+                        .toList();
+
+        return ResponseEntity.ok(services);
     }
 
-    // Récupérer un service par son ID
-    @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
+    // ============================================================
+    // RÉCUPÉRER UN SERVICE PAR SON ID
+    // PUBLIC
+    // ============================================================
+
+    @PermitAll
     @GetMapping("/{id}")
-    public ResponseEntity<ServiceMedical> getServiceById(
+    public ResponseEntity<ServiceMedicalResponse> getServiceById(
             @PathVariable Long id
     ) {
 
         return serviceMedicalService
                 .getServiceById(id)
+                .map(ServiceMedicalController::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Modifier un service médical
+    // ============================================================
+    // MODIFIER UN SERVICE MÉDICAL
+    // ADMIN uniquement
+    // ============================================================
+
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<ServiceMedical> updateService(
+    public ResponseEntity<ServiceMedicalResponse> updateService(
             @PathVariable Long id,
-            @RequestBody ServiceMedical serviceMedical
+            @RequestBody ServiceMedicalRequest request
     ) {
+
+        ServiceMedical serviceMedical = new ServiceMedical(
+                request.getNom(),
+                request.getDescription(),
+                request.getActif()
+        );
 
         ServiceMedical updatedService =
                 serviceMedicalService.updateService(
@@ -92,10 +137,14 @@ public class ServiceMedicalController {
                         serviceMedical
                 );
 
-        return ResponseEntity.ok(updatedService);
+        return ResponseEntity.ok(toResponse(updatedService));
     }
 
-    // Supprimer un service médical
+    // ============================================================
+    // SUPPRIMER UN SERVICE MÉDICAL
+    // ADMIN uniquement
+    // ============================================================
+
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteService(
@@ -105,5 +154,21 @@ public class ServiceMedicalController {
         serviceMedicalService.deleteService(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    // ============================================================
+    // CONVERSION ENTITY → RESPONSE
+    // ============================================================
+
+    private static ServiceMedicalResponse toResponse(
+            ServiceMedical serviceMedical
+    ) {
+
+        return new ServiceMedicalResponse(
+                serviceMedical.getId(),
+                serviceMedical.getNom(),
+                serviceMedical.getDescription(),
+                serviceMedical.getActif()
+        );
     }
 }

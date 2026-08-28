@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.Stage.Dalil_sante.entity.Utilisateur;
-
+import com.Stage.Dalil_sante.enums.Role;
 public interface UtilisateurRepository
         extends JpaRepository<Utilisateur, Long> {
 
@@ -22,6 +22,8 @@ public interface UtilisateurRepository
     boolean existsByEmail(String email);
 
     boolean existsByTelephone(String telephone);
+
+    boolean existsByRole(Role role);
 
     List<Utilisateur> findByActifTrue();
 

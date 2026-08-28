@@ -1,0 +1,28 @@
+// ==========================================================================
+// design/tokens/_mixins.scss
+// أدوات مساعدة (UI Helpers) قابلة لإعادة الاستخدام عبر أي مكوّن تصميم.
+// ==========================================================================
+@use 'sass:list';
+@use './colors' as c;
+
+/// حلقة تركيز (Focus Ring) موحّدة تحترم معايير الوصول (Accessibility).
+@mixin focus-ring {
+  &:focus-visible {
+    outline: 2px solid #{c.$brand-teal-500};
+    outline-offset: 2px;
+  }
+}
+
+/// انتقال سلس موحّد لكل التفاعلات (Hover/Focus) في طبقة التصميم.
+/// يقبل خاصية واحدة أو أكثر: @include smooth-transition(border-color, box-shadow);
+@mixin smooth-transition($props...) {
+  @if list.length($props) == 0 {
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  } @else {
+    $result: ();
+    @each $prop in $props {
+      $result: list.append($result, #{$prop} 0.18s cubic-bezier(0.4, 0, 0.2, 1), $separator: comma);
+    }
+    transition: $result;
+  }
+}

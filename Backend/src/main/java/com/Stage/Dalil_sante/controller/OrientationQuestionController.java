@@ -1,16 +1,27 @@
 package com.Stage.Dalil_sante.controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.Stage.Dalil_sante.dto.OrientationQuestionRequest;
+import com.Stage.Dalil_sante.dto.OrientationQuestionResponse;
 import com.Stage.Dalil_sante.entity.OrientationQuestion;
 import com.Stage.Dalil_sante.service.OrientationQuestionService;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import jakarta.annotation.security.PermitAll;
 
 @RestController
 @RequestMapping("/api/orientation/questions")
-@CrossOrigin(origins = "*")
 public class OrientationQuestionController {
 
     private final OrientationQuestionService orientationQuestionService;
@@ -21,70 +32,149 @@ public class OrientationQuestionController {
         this.orientationQuestionService = orientationQuestionService;
     }
 
-    // Ajouter une nouvelle question
+    // ============================================================
+    // AJOUTER UNE NOUVELLE QUESTION
+    // ADMIN uniquement
+    // ============================================================
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<OrientationQuestion> createQuestion(
-            @RequestBody OrientationQuestion orientationQuestion
+    public ResponseEntity<OrientationQuestionResponse> createQuestion(
+            @RequestBody OrientationQuestionRequest request
     ) {
+
+        OrientationQuestion orientationQuestion =
+                new OrientationQuestion(
+                        request.getQuestionText(),
+                        request.getQuestionOrder(),
+                        request.getActive()
+                );
+
         OrientationQuestion createdQuestion =
-                orientationQuestionService.createQuestion(orientationQuestion);
+                orientationQuestionService.createQuestion(
+                        orientationQuestion
+                );
 
-        return ResponseEntity.ok(createdQuestion);
+        return ResponseEntity.ok(
+                toResponse(createdQuestion)
+        );
     }
 
-    // Récupérer toutes les questions
+    // ============================================================
+    // RÉCUPÉRER TOUTES LES QUESTIONS
+    // PUBLIC
+    // ============================================================
+
+    @PermitAll
     @GetMapping
-    public ResponseEntity<List<OrientationQuestion>> getAllQuestions() {
+    public ResponseEntity<List<OrientationQuestionResponse>> getAllQuestions() {
 
-        List<OrientationQuestion> questions =
-                orientationQuestionService.getAllQuestions();
+        List<OrientationQuestionResponse> questions =
+                orientationQuestionService
+                        .getAllQuestions()
+                        .stream()
+                        .map(OrientationQuestionController::toResponse)
+                        .toList();
 
         return ResponseEntity.ok(questions);
     }
 
-    // Récupérer uniquement les questions actives
+    // ============================================================
+    // RÉCUPÉRER UNIQUEMENT LES QUESTIONS ACTIVES
+    // PUBLIC
+    // ============================================================
+
+    @PermitAll
     @GetMapping("/active")
-    public ResponseEntity<List<OrientationQuestion>> getActiveQuestions() {
+    public ResponseEntity<List<OrientationQuestionResponse>> getActiveQuestions() {
 
-        List<OrientationQuestion> questions =
-                orientationQuestionService.getActiveQuestions();
+        List<OrientationQuestionResponse> questions =
+                orientationQuestionService
+                        .getActiveQuestions()
+                        .stream()
+                        .map(OrientationQuestionController::toResponse)
+                        .toList();
 
         return ResponseEntity.ok(questions);
     }
 
-    // Récupérer une question par son ID
+    // ============================================================
+    // RÉCUPÉRER UNE QUESTION PAR SON ID
+    // PUBLIC
+    // ============================================================
+
+    @PermitAll
     @GetMapping("/{id}")
-    public ResponseEntity<OrientationQuestion> getQuestionById(
+    public ResponseEntity<OrientationQuestionResponse> getQuestionById(
             @PathVariable Long id
     ) {
+
         return orientationQuestionService
                 .getQuestionById(id)
+                .map(OrientationQuestionController::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Modifier une question
+    // ============================================================
+    // MODIFIER UNE QUESTION
+    // ADMIN uniquement
+    // ============================================================
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<OrientationQuestion> updateQuestion(
+    public ResponseEntity<OrientationQuestionResponse> updateQuestion(
             @PathVariable Long id,
-            @RequestBody OrientationQuestion orientationQuestion
+            @RequestBody OrientationQuestionRequest request
     ) {
+
+        OrientationQuestion orientationQuestion =
+                new OrientationQuestion(
+                        request.getQuestionText(),
+                        request.getQuestionOrder(),
+                        request.getActive()
+                );
+
         OrientationQuestion updatedQuestion =
                 orientationQuestionService.updateQuestion(
                         id,
                         orientationQuestion
                 );
 
-        return ResponseEntity.ok(updatedQuestion);
+        return ResponseEntity.ok(
+                toResponse(updatedQuestion)
+        );
     }
 
-    // Supprimer une question
+    // ============================================================
+    // SUPPRIMER UNE QUESTION
+    // ADMIN uniquement
+    // ============================================================
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteQuestion(
             @PathVariable Long id
     ) {
+
         orientationQuestionService.deleteQuestion(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    // ============================================================
+    // CONVERSION ENTITY → RESPONSE
+    // ============================================================
+
+    private static OrientationQuestionResponse toResponse(
+            OrientationQuestion orientationQuestion
+    ) {
+
+        return new OrientationQuestionResponse(
+                orientationQuestion.getId(),
+                orientationQuestion.getQuestionText(),
+                orientationQuestion.getQuestionOrder(),
+                orientationQuestion.getActive()
+        );
     }
 }

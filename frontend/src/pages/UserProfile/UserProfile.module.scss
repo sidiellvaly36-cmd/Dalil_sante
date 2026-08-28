@@ -1,0 +1,15 @@
+@use '@/styles/variables' as *;
+
+.profileCard {
+  max-width: 480px;
+  margin-bottom: $spacing-lg;
+}
+
+.avatar {
+  background-color: $color-primary;
+  margin-bottom: $spacing-md;
+}
+
+.formCard {
+  max-width: 480px;
+}

@@ -1,0 +1,45 @@
+@use '@/styles/variables' as *;
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+  flex-wrap: wrap;
+}
+
+.titleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  margin: 0 !important;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  flex-shrink: 0;
+  max-width: 100%;
+
+  // Sur les conteneurs très étroits (ex. ADMIN mobile), le bouton d'action
+  // (souvent un texte long comme "Ajouter un établissement") ne doit jamais
+  // forcer une largeur supérieure à celle disponible.
+  @media (max-width: $breakpoint-sm) {
+    width: 100%;
+    flex-shrink: 1;
+
+    :global(.ant-btn) {
+      width: 100%;
+      white-space: normal;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      height: auto;
+      min-height: 38px;
+    }
+  }
+}

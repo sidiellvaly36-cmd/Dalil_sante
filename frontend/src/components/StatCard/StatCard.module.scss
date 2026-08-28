@@ -1,0 +1,40 @@
+@use '@/styles/variables' as *;
+
+.card {
+  height: 100%;
+  border-radius: $radius-lg;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  min-width: 0;
+
+  // Sans ceci, le contenu du Statistic (titre potentiellement long, ex.
+  // "Établissements de santé") empêche ce conteneur flex de rétrécir
+  // sous sa largeur de contenu naturelle, ce qui déborde la carte sur les
+  // conteneurs très étroits (ex. colonne ADMIN mobile 390px).
+  > * {
+    min-width: 0;
+  }
+}
+
+.iconBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: $radius-md;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.footer {
+  margin-top: $spacing-sm;
+  padding-top: $spacing-sm;
+  border-top: 1px solid $color-border-light;
+  color: $color-text-secondary;
+  font-size: 13px;
+}

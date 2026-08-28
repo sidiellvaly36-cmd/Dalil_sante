@@ -13,8 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.Stage.Dalil_sante.dto.TypeEtablissementRequest;
+import com.Stage.Dalil_sante.dto.TypeEtablissementResponse;
 import com.Stage.Dalil_sante.entity.TypeEtablissement;
 import com.Stage.Dalil_sante.service.TypeEtablissementService;
+
+import jakarta.annotation.security.PermitAll;
 
 @RestController
 @RequestMapping("/api/types-etablissement")
@@ -32,49 +36,64 @@ public class TypeEtablissementController {
     // Ajouter un type d'établissement
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<TypeEtablissement> createType(
-            @RequestBody TypeEtablissement typeEtablissement
+    public ResponseEntity<TypeEtablissementResponse> createType(
+            @RequestBody TypeEtablissementRequest request
     ) {
+
+        TypeEtablissement typeEtablissement = new TypeEtablissement(
+                request.getNom(),
+                request.getDescription(),
+                request.getActif()
+        );
 
         TypeEtablissement createdType =
                 typeEtablissementService.createType(
                         typeEtablissement
                 );
 
-        return ResponseEntity.ok(createdType);
+        return ResponseEntity.ok(toResponse(createdType));
     }
 
     // Récupérer tous les types
-    @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
+    @PermitAll
     @GetMapping
-    public ResponseEntity<List<TypeEtablissement>>
+    public ResponseEntity<List<TypeEtablissementResponse>>
     getAllTypes() {
 
-        return ResponseEntity.ok(
+        List<TypeEtablissementResponse> types =
                 typeEtablissementService.getAllTypes()
-        );
+                        .stream()
+                        .map(TypeEtablissementController::toResponse)
+                        .toList();
+
+        return ResponseEntity.ok(types);
     }
 
     // Récupérer uniquement les types actifs
-    @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
+    @PermitAll
     @GetMapping("/active")
-    public ResponseEntity<List<TypeEtablissement>>
+    public ResponseEntity<List<TypeEtablissementResponse>>
     getActiveTypes() {
 
-        return ResponseEntity.ok(
+        List<TypeEtablissementResponse> types =
                 typeEtablissementService.getActiveTypes()
-        );
+                        .stream()
+                        .map(TypeEtablissementController::toResponse)
+                        .toList();
+
+        return ResponseEntity.ok(types);
     }
 
     // Récupérer un type par ID
-    @PreAuthorize("hasAnyRole('ADMIN', 'UTILISATEUR')")
+    @PermitAll
     @GetMapping("/{id}")
-    public ResponseEntity<TypeEtablissement> getTypeById(
+    public ResponseEntity<TypeEtablissementResponse> getTypeById(
             @PathVariable Long id
     ) {
 
         return typeEtablissementService
                 .getTypeById(id)
+                .map(TypeEtablissementController::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -82,10 +101,16 @@ public class TypeEtablissementController {
     // Modifier un type
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<TypeEtablissement> updateType(
+    public ResponseEntity<TypeEtablissementResponse> updateType(
             @PathVariable Long id,
-            @RequestBody TypeEtablissement typeEtablissement
+            @RequestBody TypeEtablissementRequest request
     ) {
+
+        TypeEtablissement typeEtablissement = new TypeEtablissement(
+                request.getNom(),
+                request.getDescription(),
+                request.getActif()
+        );
 
         TypeEtablissement updatedType =
                 typeEtablissementService.updateType(
@@ -93,7 +118,7 @@ public class TypeEtablissementController {
                         typeEtablissement
                 );
 
-        return ResponseEntity.ok(updatedType);
+        return ResponseEntity.ok(toResponse(updatedType));
     }
 
     // Supprimer un type
@@ -106,5 +131,17 @@ public class TypeEtablissementController {
         typeEtablissementService.deleteType(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    private static TypeEtablissementResponse toResponse(
+            TypeEtablissement typeEtablissement
+    ) {
+
+        return new TypeEtablissementResponse(
+                typeEtablissement.getId(),
+                typeEtablissement.getNom(),
+                typeEtablissement.getDescription(),
+                typeEtablissement.getActif()
+        );
     }
 }

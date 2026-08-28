@@ -1,0 +1,98 @@
+@use '@/styles/variables' as *;
+
+$dalil-blue: $color-primary;
+$dalil-green: $color-success;
+
+.currentFile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: $spacing-sm $spacing-md;
+  margin-bottom: $spacing-sm;
+  background-color: rgba(22, 119, 255, 0.06);
+  border-radius: $radius-md;
+  font-size: 13px;
+  color: $color-text-secondary;
+}
+
+.dragger {
+  :global(.ant-upload-drag) {
+    border-color: rgba(22, 119, 255, 0.35);
+    background-color: rgba(22, 119, 255, 0.02);
+    transition:
+      border-color 0.15s,
+      background-color 0.15s;
+
+    &:hover {
+      border-color: $dalil-blue;
+      background-color: rgba(22, 119, 255, 0.05);
+    }
+  }
+}
+
+.draggerIcon {
+  font-size: 40px;
+  color: $dalil-blue;
+  margin-bottom: 4px;
+}
+
+.draggerText {
+  font-size: 14px;
+  font-weight: 500;
+  color: $color-text-primary;
+  margin-bottom: 2px !important;
+}
+
+.draggerHint {
+  font-size: 12.5px;
+  color: $color-text-tertiary;
+}
+
+.filePreview {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md;
+  border: 1.5px solid rgba(30, 163, 74, 0.35);
+  background-color: rgba(30, 163, 74, 0.05);
+  border-radius: $radius-md;
+}
+
+.filePreviewIcon {
+  font-size: 32px;
+  color: #d32029;
+  flex-shrink: 0;
+}
+
+.filePreviewInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.filePreviewName {
+  max-width: 100%;
+}
+
+.filePreviewSize {
+  font-size: 12.5px;
+}
+
+.filePreviewRemove {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: $color-text-tertiary;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: color 0.15s;
+
+  &:hover {
+    color: #d32029;
+  }
+}
